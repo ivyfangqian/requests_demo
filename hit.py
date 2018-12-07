@@ -1,9 +1,13 @@
 import requests
 import unittest
+import utils
 
 
 class Client(unittest.TestCase):
     """Client(url, method, datatype=None)"""
+
+    # 存储公共数据
+    env_data = {}
 
     def __init__(self, url, method, datatype=None):
         self.__url = url
@@ -21,6 +25,9 @@ class Client(unittest.TestCase):
     def set_data(self, data):
         """添加接口参数"""
         self.__data = data
+
+    def add_sign(self, token):
+        self.__data["sign"] = utils.ge_sign(token, self.__data)
 
     def send(self):
         """根据发送数据方式，发送数据"""
@@ -116,6 +123,14 @@ class Client(unittest.TestCase):
         """check_contains(self, expect)，校验响应正文是否包含内容"""
         self.assertIn(expect, self.res_text)
         print("响应内容包含校验成功：实际响应内容[{actual}]，预期包含内容[{expect}]".format(actual=self.res_text), expect=expect)
+
+    @classmethod
+    def save_evn_param(cls, key, value):
+        cls.env_data[key] = value
+
+    @classmethod
+    def get_env_param(cls, key):
+        return cls.env_data[key]
 
 
 class Method(object):
